@@ -30,7 +30,6 @@
       "id": "1",
       "name": "Project Managements",
       "members": [
-        "ananya.husen@mail.kmutt.ac.th",
         "mild@mail.com",
         "tiger@mail.com",
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
@@ -55,23 +54,35 @@
         {
           "id": null,
           "name": "cs"
+        },
+        {
+          "id": null,
+          "name": "test"
         }
       ],
       "cols": [
         {
           "id": 1,
           "name": "To Do",
-          "cards": []
-        },
-        {
-          "id": 2,
-          "name": "Doings",
-          "cards": []
-        },
-        {
-          "id": 3,
-          "name": "Done",
           "cards": [
+            {
+              "id": 2,
+              "title": "test2",
+              "description": "",
+              "badges": [],
+              "members": [
+                "itbkk.somsuan@ad.sit.kmutt.ac.th"
+              ]
+            },
+            {
+              "id": 1,
+              "title": "testtt",
+              "description": "",
+              "badges": [],
+              "members": [
+                "itbkk.somsuan@ad.sit.kmutt.ac.th"
+              ]
+            },
             {
               "id": 1,
               "title": "Research UI inspiration",
@@ -86,40 +97,18 @@
               ]
             }
           ]
+        },
+        {
+          "id": 2,
+          "name": "Doings",
+          "cards": []
+        },
+        {
+          "id": 3,
+          "name": "Done",
+          "cards": []
         }
       ]
-    },
-    {
-      "id": "563d",
-      "name": "addas",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "f442",
-      "name": "xax",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "d8ab",
-      "name": "xaxc",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "ab8d",
-      "name": "xaxc",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
     },
     {
       "id": "39b5",
@@ -196,15 +185,6 @@
     {
       "id": "a208",
       "name": "njnj",
-      "members": [
-        "ananya.husen@mail.kmutt.ac.th",
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "a852",
-      "name": "tes6",
       "members": [
         "ananya.husen@mail.kmutt.ac.th",
         "itbkk.somsuan@ad.sit.kmutt.ac.th"

@@ -139,6 +139,28 @@ const getBoardById = async (id) => {
   }
 };
 
+const removeBoardById = async (id) => {
+  try {
+    if (!id) {
+      throw new Error("Missing required id.");
+    }
+    const response = await fetch(`${BOARD_API_URL}/${id}`,{
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("error");
+        
+      }
+   
+
+    return ;
+  } catch (error) {
+    return {
+      error: error.message,
+    };
+  }
+};
+
 const getUserByEmail = async (email) => {
   try {
     if (!email) {
@@ -182,4 +204,4 @@ const login = async (email, password) => {
   }
 };
 
-export { getBoardByuserEmail,updateBoard, getBoardById, createBoard };
+export { getBoardByuserEmail,updateBoard,removeBoardById, getBoardById, createBoard };

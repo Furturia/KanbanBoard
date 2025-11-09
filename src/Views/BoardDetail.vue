@@ -1,22 +1,30 @@
 <script setup>
+import FormCard from "@/components/formCard.vue";
 import MessageModal from "@/components/MessageModal.vue";
-import { getBoardById, updateBoard } from "@/services/boardService";
+
+import {
+  getBoardById,
+  removeBoardById,
+  updateBoard,
+} from "@/services/boardService";
 import { useBoardStore } from "@/store/boardStore";
 import { useUserStore } from "@/store/userStore";
 import { computed, onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const boardId = route.params.id;
 const board = ref(null);
 const boardStore = useBoardStore();
-
+const router = useRouter();
 const userStore = useUserStore();
 const user = computed(() => userStore.getUser());
 const draggingCard = ref(null);
 const draggingFromCol = ref(null);
 const dragging = ref(false);
 const hoveredIndex = ref(null);
+
+const showInviteModal = ref(false);
 onMounted(async () => {
   try {
     const response = await getBoardById(boardId);
@@ -66,7 +74,6 @@ const onTouchEnd = (event) => {
 
   const toColId = toColEl.dataset.colId;
 
-  console.log("Drop in col:", toColId);
   onDrop(toColId, hoveredIndex.value);
 };
 
@@ -84,38 +91,87 @@ const updateBoardApi = async () => {
 
     boardStore.updateBoardVS(data);
   } catch (error) {}
+  showInviteModal.value=false
+};
+const removeBoardApi = async () => {
+  showDelBoard.value = false;
+  try {
+    const data = await removeBoardById(boardId);
+
+    if (data?.error) {
+      throw new Error(data.error);
+    }
+
+    boardStore.removeBoard(boardId);
+    router.push({ name: "board" });
+  } catch (error) {}
 };
 
-const onDrop = async (toColId, dropIndex = null) => {
-  dragging.value = false;
-  if (!draggingCard.value) return;
-  const fromCol = board.value.cols.find(
-    (col) => col.id === draggingFromCol.value
-  );
-  console.log(draggingFromCol.value);
-
-  console.log(fromCol);
-
-  fromCol.cards = fromCol.cards.filter((c) => c.id !== draggingCard.value.id);
-
-  const toCol = board.value.cols.find((col) => col.id == toColId);
-
-  console.log(toColId);
-
-  console.log("to" + toCol);
-
-  if (dropIndex !== null) {
-    toCol.cards.splice(dropIndex, 0, draggingCard.value);
-  } else {
-    toCol.cards.push(draggingCard.value);
-  }
-
-  await updateBoardApi();
-
+const resetDragState = () => {
   dragging.value = false;
   draggingCard.value = null;
   draggingFromCol.value = null;
   hoveredIndex.value = null;
+};
+
+const onDrop = async (toColId, dropIndex = null) => {
+  console.log(hoveredIndex.value);
+
+  if (!draggingCard.value) return;
+
+  const fromCol = board.value.cols.find(
+    (col) => col.id === draggingFromCol.value
+  );
+  const toCol = board.value.cols.find((col) => col.id == toColId);
+
+  if (!fromCol || !toCol) {
+    resetDragState();
+    return;
+  }
+
+  const fromIndex = fromCol.cards.findIndex(
+    (c) => c.id === draggingCard.value.id
+  );
+
+  console.log(draggingCard.value.id);
+
+  console.log("from" + fromIndex);
+  console.log("to" + dropIndex);
+
+  if (fromIndex === -1) {
+    console.log("fromIndex === -1");
+
+    resetDragState();
+    return;
+  }
+  if (
+    draggingFromCol.value === toColId &&
+    (dropIndex === null || dropIndex === fromIndex) &&
+    hoveredIndex.value === fromIndex
+  ) {
+    console.log("same position");
+    resetDragState();
+    return;
+  }
+
+  let insertIndex = dropIndex;
+
+  const [movedCard] = fromCol.cards.splice(fromIndex, 1);
+
+  if (insertIndex == null || insertIndex > toCol.cards.length) {
+    insertIndex = toCol.cards.length;
+    console.log("from" + fromIndex);
+    console.log("insert" + dropIndex);
+  }
+
+  console.log(
+    `Move card[${fromIndex}] to index[${insertIndex}] in col[${toColId}]`
+  );
+  toCol.cards.splice(insertIndex, 0, movedCard);
+
+  resetDragState();
+
+  await updateBoardApi();
 };
 
 const newColName = ref("");
@@ -131,9 +187,27 @@ const addCol = async () => {
   }
 };
 
+const showUpdateCardModal = ref(false);
+const showDelBoard = ref(false);
+const updateForm = ref({
+  title: "",
+  description: "",
+  badges: [],
+  members: [],
+});
+const targetCard = ref(null);
+const updateCard = (card) => {
+  targetCard.value = card;
+  updateForm.value.title = card.title;
+  updateForm.value.description = card.description;
+  updateForm.value.badges = [...card.badges];
+  updateForm.value.members = [...card.members];
+  showUpdateCardModal.value = true;
+};
+
 const showAddCardModal = ref(false);
-const showMemberDropdown = ref(false);
-const showBadgeDropdown = ref(false);
+// const showMemberDropdown = ref(false);
+// const showBadgeDropdown = ref(false);
 const selectedColId = ref(null);
 const newCard = ref({
   title: "",
@@ -160,80 +234,17 @@ const closeAddCardModal = () => {
   console.log("hiclose");
 
   selectedColId.value = null;
-  showMemberDropdown.value = false;
-  showBadgeDropdown.value = false;
+  showUpdateCardModal.value = false;
+  updateForm.value = { title: "", description: "", badges: [], members: [] };
+  // showMemberDropdown.value = false;
+  // showBadgeDropdown.value = false;
   showAddCardModal.value = false;
   newCard.value = { title: "", description: "", badges: [], members: [] };
 };
 
-const selectMember = (member) => {
-  if (!newCard.value.members.includes(member)) {
-    newCard.value.members.push(member);
-  }
-  showMemberDropdown.value = false;
-};
-
-const availableMembers = () => {
-  if (!board.value?.members) return [];
-  return board.value.members.filter(
-    (m) => !newCard.value.members.includes(m) && m !== user.value.email
-  );
-};
-
-const removeMember = (index) => {
-  newCard.value.members.value.splice(index, 1);
-};
-
-const badgeInput = ref("");
-const selectBadge = (badge) => {
-  console.log("select");
-
-  if (!newCard.value.badges.includes(badge.name)) {
-    console.log("hi");
-
-    newCard.value.badges.push(badge.name);
-  }
-  showBadgeDropdown.value = false;
-};
-
-const addBadge = () => {
-  if (badgeInput.value.trim()) {
-    const exists =
-      board.value.badges.filter(
-        (badge) =>
-          badge.name.trim().toLowerCase() ===
-          badgeInput.value.trim().toLowerCase()
-      ).length !== 0;
-    if (!newCard.value.badges.includes(badgeInput.value.trim()) && !exists) {
-      newCard.value.badges.push(badgeInput.value.trim());
-      board.value.badges.push({
-        id:
-          Math.max(
-            board.value.badges.map((badge) => badge.id || 0),
-            0
-          ) + 1,
-        name: badgeInput.value.trim(),
-      });
-    }
-    badgeInput.value = "";
-    showBadgeDropdown.value = false;
-  }
-};
-
-const availableBadges = () => {
-  if (!board.value?.badges) return [];
-  return board.value.badges.filter(
-    (b) => !newCard.value.badges.includes(b.name)
-  );
-};
-
-const removeBadge = (index) => {
-  newCard.value.badges.splice(index, 1);
-};
-
 const removeCard = async () => {
   console.log(selectDelCard.value);
-  showDelCard.value=false
+  showDelCard.value = false;
   const col = board.value.cols.find(
     (col) => col.id == selectDelCard.value.colId
   );
@@ -245,7 +256,7 @@ const removeCard = async () => {
 };
 
 const removeCol = async () => {
-  showDelCol.value=false
+  showDelCol.value = false;
   const index = board.value.cols.findIndex(
     (col) => col.id == selectDelCol.value.colRemove.id
   );
@@ -257,19 +268,12 @@ const removeCol = async () => {
 };
 
 const addCard = async () => {
-  console.log("add");
-
   if (!newCard.value.title.trim()) return;
 
   const targetCol = board.value.cols.find((col) => {
-    console.log(col.id === selectedColId.value);
-    console.log("target" + selectedColId.value);
-    console.log("col" + col.id);
-
     return col.id === selectedColId.value;
   });
 
-  console.log(targetCol);
   if (!targetCol) return;
 
   const addNewCard = {
@@ -280,7 +284,20 @@ const addCard = async () => {
 
   targetCol.cards.push(addNewCard);
 
-  console.log("beforeapi" + board.value);
+  await updateBoardApi();
+
+  closeAddCardModal();
+};
+const onUpdateCard = async () => {
+  if (!updateForm.value.title.trim()) return;
+
+  if (!targetCard.value && updateForm.value) return;
+
+  targetCard.value.title = updateForm.value.title;
+  targetCard.value.description = updateForm.value.description;
+  targetCard.value.badges = [...updateForm.value.badges];
+  targetCard.value.members = [...updateForm.value.members];
+
   await updateBoardApi();
 
   closeAddCardModal();
@@ -295,10 +312,21 @@ const askDelCol = (colRemove) => {
   selectDelCol.value = { colRemove };
 };
 
-const lostFocus = () => {
-  setTimeout(() => {
-    showBadgeDropdown.value = false;
-  }, 150);
+const memberEmail = ref("");
+const showMemberInput = ref(false);
+
+const addMember = () => {
+  if (memberEmail.value && memberEmail.value.includes("@")) {
+    if (!board.value.members.includes(memberEmail.value)) {
+      board.value.members.push(memberEmail.value);
+      memberEmail.value = "";
+      showMemberInput.value = false;
+    }
+  }
+};
+
+const removeMember = (index) => {
+  board.value.members.splice(index, 1);
 };
 </script>
 
@@ -364,18 +392,25 @@ const lostFocus = () => {
           </button>
         </div>
         <div class="flex gap-2 w-full sm:w-auto">
-          <button
+          <button @click="showInviteModal=true"
             class="btn btn-info btn-sm sm:btn-md text-white flex-1 sm:flex-none"
           >
             invite
           </button>
           <button
+            @click="showDelBoard = true"
             class="btn btn-error btn-sm sm:btn-md text-white flex-1 sm:flex-none"
           >
             ลบบอร์ด
           </button>
         </div>
       </div>
+    </div>
+    <div
+      v-if="!board?.cols"
+      class="w-full mt-12 h-full p-12 flex justify-center items-center rounded-lg bg-blue-50 border-1 border-blue-300"
+    >
+      <p class="text-blue-500 font-extralight">ไม่มีรายการ</p>
     </div>
     <div class="h-screen overflow-x-scroll">
       <div class="flex gap-4 h-full">
@@ -426,7 +461,7 @@ const lostFocus = () => {
             v-for="(card, index) in col?.cards"
             draggable="true"
             @dragstart="onDragStart(card, col.id)"
-            @dragover.prevent
+            @dragover.prevent="hoveredIndex = index"
             @drop.stop="onDrop(col.id, index)"
             @touchstart="onDragStart(card, col.id, index)"
             @touchmove.prevent="onTouchMove"
@@ -435,21 +470,48 @@ const lostFocus = () => {
             :data-col-id="col.id"
           >
             <div
-              v-show="dragging"
+              v-if="dragging && hoveredIndex === index"
               class="mb-2 w-full rounded-2xl border-t-2 text-blue-600"
             ></div>
             <div
+              :class="{
+                'opacity-50': dragging && draggingCard?.id === card.id,
+              }"
               class="shrink-0 cursor-pointer rounded-xl w-full flex flex-col gap-3 p-3 bg-blue-50"
             >
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <h1 class="text-lg">{{ card?.title }}</h1>
-                <button
-                  @click.stop="askDelCard(index, col.id)"
-                  @touchstart.stop
-                  class="btn btn-ghost btn-circle text-black/50 font-light"
-                >
-                  X
-                </button>
+                <div class="flex justify-center items-center gap-1">
+                  <button
+                    @click.stop="updateCard(card)"
+                    @touchstart.stop
+                    class="btn btn-ghost btn-circle text-blue-600 font-light"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="1em"
+                      height="1em"
+                      viewBox="0 0 24 24"
+                    >
+                      <g fill="none">
+                        <path
+                          d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"
+                        />
+                        <path
+                          fill="#155dfc"
+                          d="M13 3a1 1 0 0 1 .117 1.993L13 5H5v14h14v-8a1 1 0 0 1 1.993-.117L21 11v8a2 2 0 0 1-1.85 1.995L19 21H5a2 2 0 0 1-1.995-1.85L3 19V5a2 2 0 0 1 1.85-1.995L5 3zm6.243.343a1 1 0 0 1 1.497 1.32l-.083.095l-9.9 9.899a1 1 0 0 1-1.497-1.32l.083-.094z"
+                        />
+                      </g>
+                    </svg>
+                  </button>
+                  <button
+                    @click.stop="askDelCard(index, col.id)"
+                    @touchstart.stop
+                    class="btn btn-ghost btn-circle text-blue-600 font-light"
+                  >
+                    X
+                  </button>
+                </div>
               </div>
               <div class="flex flex-wrap gap-2">
                 <div
@@ -486,7 +548,7 @@ const lostFocus = () => {
   </div>
   <div
     v-if="openColModal"
-    class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4"
+    class="fixed inset-0 z-50 flex items-center justify-center  backdrop-blur-sm p-4"
   >
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
       <h2 class="text-xl font-semibold mb-4">เพิ่มคอลัมน์ใหม่</h2>
@@ -515,178 +577,23 @@ const lostFocus = () => {
     </div>
   </div>
 
-  <div
-    v-if="showAddCardModal"
-    class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4"
-  >
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-      <h2 class="text-xl font-semibold mb-4">เพิ่มการ์ดใหม่</h2>
-
-      <div class="mb-4">
-        <label class="label">
-          <span class="label-text">ชื่อการ์ด</span>
-        </label>
-        <input
-          v-model="newCard.title"
-          type="text"
-          placeholder="ใส่ชื่อการ์ด..."
-          class="input input-bordered w-full"
-          @keyup.enter="addCard"
-        />
-      </div>
-      <div class="mb-4">
-        <label class="label">
-          <span class="label-text font-semibold">คำอธิบาย</span>
-        </label>
-        <textarea
-          v-model="newCard.description"
-          placeholder="ใส่คำอธิบาย..."
-          class="textarea textarea-bordered w-full h-24"
-        ></textarea>
-      </div>
-
-      <div class="form-control mb-4">
-        <label class="label">
-          <span class="label-text font-semibold">สมาชิก</span>
-        </label>
-        <div class="relative">
-          <button
-            @click="showMemberDropdown = !showMemberDropdown"
-            class="btn btn-outline w-full justify-start"
-          >
-            <div class="flex w-full items-center justify-between">
-              เลือกสมาชิก
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="1em"
-                height="1em"
-                viewBox="0 0 24 24"
-              >
-                <g fill="none" fill-rule="evenodd">
-                  <path
-                    d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"
-                  />
-                  <path
-                    fill="#000"
-                    d="M12.707 15.707a1 1 0 0 1-1.414 0L5.636 10.05A1 1 0 1 1 7.05 8.636l4.95 4.95l4.95-4.95a1 1 0 0 1 1.414 1.414z"
-                  />
-                </g>
-              </svg>
-            </div>
-          </button>
-
-          <div
-            v-if="showMemberDropdown"
-            class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto"
-          >
-            <div
-              v-for="member in availableMembers()"
-              :key="member"
-              @click="selectMember(member)"
-              @blur="showMemberDropdown = false"
-              class="px-4 py-2 hover:bg-blue-50 cursor-pointer"
-            >
-              {{ member }}
-            </div>
-            <div
-              v-if="availableMembers().length === 0"
-              class="px-4 py-2 text-gray-400 text-center"
-            >
-              ไม่มีสมาชิกที่เหลือ
-            </div>
-          </div>
-        </div>
-
-        <div class="flex flex-wrap gap-2 mt-3">
-          <div
-            v-for="(member, index) in newCard.members"
-            v-show="member !== user.email"
-            :key="index"
-            class="badge badge-lg gap-2 bg-blue-100 text-blue-800"
-          >
-            {{ member }}
-            <button @click="removeMember(index)" class="btn btn-ghost btn-xs">
-              X
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="mb-10">
-        <label class="label">
-          <span class="label-text font-semibold">ป้ายกำกับ</span>
-        </label>
-        <div class="flex gap-2 mb-2">
-          <div class="relative flex-1">
-            <input
-              v-model="badgeInput"
-              @focus="showBadgeDropdown = !showBadgeDropdown"
-              @blur="lostFocus"
-              @input="showBadgeDropdown = true"
-              type="text"
-              placeholder="พิมพ์หรือเลือกป้ายกำกับ..."
-              class="input input-bordered w-full"
-              @keyup.enter="addBadge"
-            />
-            <div
-              v-if="
-                showBadgeDropdown &&
-                (badgeInput || availableBadges().length > 0)
-              "
-              class="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto"
-            >
-              <div
-                v-for="badge in availableBadges()"
-                :key="badge"
-                @click="selectBadge(badge)"
-                class="px-4 py-2 hover:bg-green-50 cursor-pointer"
-              >
-                {{ badge.name }}
-              </div>
-            </div>
-          </div>
-          <button @click="addBadge" class="btn btn-primary text-white">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="currentColor"
-                d="M11 13H6q-.425 0-.712-.288T5 12t.288-.712T6 11h5V6q0-.425.288-.712T12 5t.713.288T13 6v5h5q.425 0 .713.288T19 12t-.288.713T18 13h-5v5q0 .425-.288.713T12 19t-.712-.288T11 18z"
-              />
-            </svg>
-          </button>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <div
-            v-for="(badge, index) in newCard.badges"
-            :key="index"
-            class="badge badge-lg gap-2 bg-green-100 text-green-800"
-          >
-            {{ badge }}
-            <button @click="removeBadge(index)" class="btn btn-ghost btn-xs">
-              X
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex gap-2 justify-end">
-        <button @click="showAddCardModal = false" class="btn btn-ghost">
-          ยกเลิก
-        </button>
-        <button
-          :disabled="!newCard.title"
-          @click="addCard"
-          class="btn btn-primary text-white"
-        >
-          เพิ่ม
-        </button>
-      </div>
-    </div>
-  </div>
+  <FormCard
+    :showAddCardModal="showAddCardModal"
+    :board="board"
+    :user="user"
+    :newCard="newCard"
+    :close-add-card-modal="closeAddCardModal"
+    :addCard="addCard"
+  />
+  <FormCard
+    :update="true"
+    :showAddCardModal="showUpdateCardModal"
+    :board="board"
+    :user="user"
+    :newCard="updateForm"
+    :close-add-card-modal="closeAddCardModal"
+    :addCard="onUpdateCard"
+  />
 
   <MessageModal
     v-if="showDelCard"
@@ -694,7 +601,7 @@ const lostFocus = () => {
     :handle-cancel="
       () => {
         showDelCard = false;
-        selectDelCard = null
+        selectDelCard = null;
       }
     "
     :title="'Do you want to delete this card ?'"
@@ -706,11 +613,99 @@ const lostFocus = () => {
     :handle-cancel="
       () => {
         showDelCol = false;
-        selectDelCol = null
+        selectDelCol = null;
       }
     "
     :title="'Do you want to delete this column ?'"
   />
+
+  <MessageModal
+    v-if="showDelBoard"
+    :handle-ok="removeBoardApi"
+    :handle-cancel="
+      () => {
+        showDelBoard = false;
+      }
+    "
+    :title="'Do you want to delete this board ?'"
+  />
+
+  <div v-if="showInviteModal"class="fixed inset-0 z-50 flex items-center  justify-center backdrop-blur-sm p-4">
+    <div class="bg-white h-fit w-fit outline-1 outline-blue-600 p-6 rounded-2xl">
+      <form @submit.prevent="updateBoardApi" class="flex flex-col gap-6">
+
+        <div class="flex flex-col gap-2">
+          <label class="label">
+            <span class="label-text font-semibold text-lg"> เพิ่มสมาชิก </span>
+          </label>
+
+          <div
+            v-if="board.members.length > 0"
+            class="flex flex-wrap gap-2 mb-3"
+          >
+            <div
+              v-for="(member, index) in board.members"
+              v-show="member!==user.email"
+              :key="index"
+              class="badge badge-lg badge-primary gap-2"
+            >
+              {{ member }}
+              <button
+                type="button"
+                @click="removeMember(index)"
+                class="cursor-pointer hover:text-red-500"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          <div v-if="showMemberInput" class="flex gap-2">
+            <input
+              type="email"
+              v-model="memberEmail"
+              placeholder="กรอกอีเมลสมาชิก"
+              class="input input-bordered w-full"
+              @keyup.enter="addMember"
+            />
+            <button type="button" @click="addMember" class="btn btn-primary">
+              เพิ่ม
+            </button>
+            <button
+              type="button"
+              @click="
+                showMemberInput = false;
+                memberEmail = '';
+              "
+              class="btn btn-ghost"
+            >
+              ยกเลิก
+            </button>
+          </div>
+
+          <button
+            v-else
+            type="button"
+            @click="showMemberInput = true"
+            class="btn btn-outline btn-primary w-full"
+          >
+            + เพิ่มสมาชิก
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="flex gap-3 justify-end">
+          <button type="button" @click="showInviteModal=false" class="btn btn-ghost btn-lg">
+            ยกเลิก
+          </button>
+          <button  type="submit" class="btn btn-primary btn-lg">
+           บันทึก
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 <style></style>

@@ -1,5 +1,5 @@
 <script setup>
-import { RouterLink, RouterView } from "vue-router";
+import { RouterLink, RouterView, useRouter } from "vue-router";
 import Navbar from "./components/Navbar.vue";
 import { useUserStore } from "./store/userStore";
 import { onMounted } from "vue";
@@ -7,6 +7,7 @@ import { computed } from "vue";
 import { ref } from "vue";
 import { useBoardStore } from "./store/boardStore";
 
+const router=useRouter()
 const userStore = useUserStore();
 const boardStore = useBoardStore()
 const user = computed(() => userStore.getUser());
@@ -25,6 +26,7 @@ const logout = () => {
   userStore.clearUser();
   boardStore.clearBoard()
   dropdownOpen.value = false;
+  router.push({name:'home'})
 };
 </script>
 
