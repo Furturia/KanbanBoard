@@ -28,32 +28,49 @@
   "boards": [
     {
       "id": "1",
-      "name": "Project Management",
+      "name": "Project Managements",
       "members": [
         "ananya.husen@mail.kmutt.ac.th",
         "mild@mail.com",
         "tiger@mail.com",
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
       ],
+      "badges": [
+        {
+          "id": 1,
+          "name": "UI"
+        },
+        {
+          "id": 2,
+          "name": "Frontend"
+        },
+        {
+          "id": 3,
+          "name": "Backend"
+        },
+        {
+          "id": 4,
+          "name": "Urgent"
+        },
+        {
+          "id": null,
+          "name": "cs"
+        }
+      ],
       "cols": [
         {
           "id": 1,
           "name": "To Do",
-          "cards": [
-            {
-              "id": 2,
-              "title": "Design Login Page",
-              "description": "Create responsive layout",
-              "members": [
-                "tiger@mail.com"
-              ],
-              "order": 1
-            }
-          ]
+          "cards": []
         },
         {
           "id": 2,
-          "name": "Doing",
+          "name": "Doings",
+          "cards": []
+        },
+        {
+          "id": 3,
+          "name": "Done",
           "cards": [
             {
               "id": 1,
@@ -63,20 +80,10 @@
                 "ananya.husen@mail.kmutt.ac.th",
                 "mild@mail.com"
               ],
-              "order": 1
-            }
-          ]
-        },
-        {
-          "id": 3,
-          "name": "Done",
-          "cards": [
-            {
-              "id": 3,
-              "title": "Setup JSON Server",
-              "description": "Install & config backend mock",
-              "members": [],
-              "order": 1
+              "badges": [
+                "UI",
+                "Frontend"
+              ]
             }
           ]
         }
@@ -87,91 +94,104 @@
       "name": "addas",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "f442",
       "name": "xax",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "d8ab",
       "name": "xaxc",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "ab8d",
       "name": "xaxc",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "39b5",
       "name": "jkjk",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "b04e",
       "name": "jhjh",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "6656",
       "name": "bpk",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "6c77",
       "name": "xmxksmk",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "d031",
       "name": "mkm",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "f4c8",
       "name": "ssmkc",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "14c9",
       "name": "mkmk",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "1b98",
       "name": "mkmk",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "09b0",
       "name": "่้hg",
       "members": [
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "a208",
@@ -179,7 +199,8 @@
       "members": [
         "ananya.husen@mail.kmutt.ac.th",
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     },
     {
       "id": "a852",
@@ -187,7 +208,8 @@
       "members": [
         "ananya.husen@mail.kmutt.ac.th",
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ]
+      ],
+      "badges": []
     }
   ]
 }

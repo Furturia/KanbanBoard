@@ -62,6 +62,39 @@ const createBoard = async (board) => {
   }
 };
 
+
+// const addCols = async (id,cols) => {
+//   console.log(id+ cols);
+  
+//   try {
+//     if (!id || !cols) {
+//       throw new Error(
+//         `Missing required column properties.`
+//       );
+//     }
+
+//     const response = await fetch(`${BOARD_API_URL}/${id}/cols`, {
+//       method: "POST",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify(cols),
+//     });
+
+//     if (!response.ok) {
+//       throw new Error(
+//         `Failed to create column. Server responded with status ${response.status}`
+//       );
+//     }
+
+//     const data = await response.json();
+
+//     return data;
+//   } catch (error) {
+//     return {
+//       error: `Error creating column: ${error.message}`,
+//     };
+//   }
+// };
+
 const updateBoard = async (board) => {
   try {
     const res = await fetch(

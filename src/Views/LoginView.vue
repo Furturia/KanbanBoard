@@ -2,7 +2,7 @@
 import { useUserStore } from '@/store/userStore';
 import { onMounted, ref, watch } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
-import {login} from '../services/userService'
+import {login} from '../services/userService.js'
 
 
 const formData= ref({

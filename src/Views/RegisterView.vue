@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { useUserStore } from '@/store/userStore';
-import { register } from '../services/userService';
+import { register } from '../services/userService.js';
 
 const formData = ref({
   username: '',
