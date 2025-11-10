@@ -29,3 +29,6 @@ a. เมื่อมีการเพิ่มสมาชิก ผู้ท�
 - Pinia
 ## Back end
 - Json Server
+
+## Figma
+- https://www.figma.com/design/Ho3mXMUjgkyzx5ZVTAunp8/Untitled?node-id=7-2&t=B9mGpnvwC5PqAzgJ-1
