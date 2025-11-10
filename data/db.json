@@ -4,7 +4,16 @@
       "id": "1",
       "username": "figgy",
       "email": "ananya.husen@mail.kmutt.ac.th",
-      "password": "abc124"
+      "password": "abc124",
+      "noti": [
+        {
+          "title": "คุณถูกเพิ่มในบอร์ดใหม่",
+          "boardId": "1",
+          "message": "คุณถูกเชิญให้เข้าร่วม Project Managements โดย itbkk.somsuan@ad.sit.kmutt.ac.th",
+          "createdAt": "2025-11-10T11:30:00Z",
+          "isRead": false
+        }
+      ]
     },
     {
       "id": "2",
@@ -62,9 +71,41 @@
       ],
       "cols": [
         {
-          "id": 1,
-          "name": "To Do",
+          "id": 2,
+          "name": "test",
+          "cards": []
+        },
+        {
+          "id": 3,
+          "name": "test2",
           "cards": [
+            {
+              "id": 3,
+              "title": "test3",
+              "description": "",
+              "badges": [],
+              "members": [
+                "itbkk.somsuan@ad.sit.kmutt.ac.th"
+              ]
+            },
+            {
+              "id": 1,
+              "title": "test1",
+              "description": "",
+              "badges": [],
+              "members": [
+                "itbkk.somsuan@ad.sit.kmutt.ac.th"
+              ]
+            },
+            {
+              "id": 4,
+              "title": "test4",
+              "description": "",
+              "badges": [],
+              "members": [
+                "itbkk.somsuan@ad.sit.kmutt.ac.th"
+              ]
+            },
             {
               "id": 2,
               "title": "test2",
@@ -73,39 +114,12 @@
               "members": [
                 "itbkk.somsuan@ad.sit.kmutt.ac.th"
               ]
-            },
-            {
-              "id": 1,
-              "title": "testtt",
-              "description": "",
-              "badges": [],
-              "members": [
-                "itbkk.somsuan@ad.sit.kmutt.ac.th"
-              ]
-            },
-            {
-              "id": 1,
-              "title": "Research UI inspiration",
-              "description": "Collect dribbble references",
-              "members": [
-                "ananya.husen@mail.kmutt.ac.th",
-                "mild@mail.com"
-              ],
-              "badges": [
-                "UI",
-                "Frontend"
-              ]
             }
           ]
         },
         {
-          "id": 2,
-          "name": "Doings",
-          "cards": []
-        },
-        {
-          "id": 3,
-          "name": "Done",
+          "id": 4,
+          "name": "test3",
           "cards": []
         }
       ]
@@ -178,15 +192,6 @@
       "id": "09b0",
       "name": "่้hg",
       "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "a208",
-      "name": "njnj",
-      "members": [
-        "ananya.husen@mail.kmutt.ac.th",
         "itbkk.somsuan@ad.sit.kmutt.ac.th"
       ],
       "badges": []

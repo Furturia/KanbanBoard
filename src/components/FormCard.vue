@@ -7,7 +7,7 @@ const props = defineProps({
   user: Object,
   closeAddCardModal: Function,
   addCard: Function,
-  update:Boolean
+  update: Boolean,
 });
 
 const showMemberDropdown = ref(false);
@@ -21,12 +21,11 @@ const selectMember = (member) => {
 };
 
 const availableMembers = () => {
-    console.log(props.board);
-    
+  console.log(props.board);
+
   if (!props.board?.members) return [];
   return props.board.members.filter(
-    (m) =>
-      !props.newCard.members.includes(m) && m !== props.user.email
+    (m) => !props.newCard.members.includes(m) && m !== props.user.email
   );
 };
 
@@ -54,10 +53,7 @@ const addBadge = () => {
           badge.name.trim().toLowerCase() ===
           badgeInput.value.trim().toLowerCase()
       ).length !== 0;
-    if (
-      !props.newCard.badges.includes(badgeInput.value.trim()) &&
-      !exists
-    ) {
+    if (!props.newCard.badges.includes(badgeInput.value.trim()) && !exists) {
       props.newCard.badges.push(badgeInput.value.trim());
       props.board.badges.push({
         id:
@@ -89,6 +85,11 @@ const lostFocus = () => {
     showBadgeDropdown.value = false;
   }, 150);
 };
+
+const handlerAdd = () => {
+  badgeInput.value = "";
+  props.addCard()
+};
 </script>
 
 <template>
@@ -97,7 +98,9 @@ const lostFocus = () => {
     class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4"
   >
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-      <h2 class="text-xl font-semibold mb-4">{{update? 'อัปเดตการ์ด':'เพิ่มการ์ดใหม่'}}</h2>
+      <h2 class="text-xl font-semibold mb-4">
+        {{ update ? "อัปเดตการ์ด" : "เพิ่มการ์ดใหม่" }}
+      </h2>
 
       <div class="mb-4">
         <label class="label">
@@ -254,10 +257,10 @@ const lostFocus = () => {
         <button @click="closeAddCardModal" class="btn btn-ghost">ยกเลิก</button>
         <button
           :disabled="!newCard.title"
-          @click="addCard"
+          @click="handlerAdd"
           class="btn btn-primary text-white"
         >
-          {{update? 'อัปเดต':'เพิ่ม'}}
+          {{ update ? "อัปเดต" : "เพิ่ม" }}
         </button>
       </div>
     </div>

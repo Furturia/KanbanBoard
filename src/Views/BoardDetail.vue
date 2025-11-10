@@ -1,5 +1,5 @@
 <script setup>
-import FormCard from "@/components/formCard.vue";
+import FormCard from "@/components/FormCard.vue";
 import MessageModal from "@/components/MessageModal.vue";
 
 import {
@@ -91,7 +91,7 @@ const updateBoardApi = async () => {
 
     boardStore.updateBoardVS(data);
   } catch (error) {}
-  showInviteModal.value=false
+  showInviteModal.value = false;
 };
 const removeBoardApi = async () => {
   showDelBoard.value = false;
@@ -179,7 +179,13 @@ const openColModal = ref(false);
 const addCol = async () => {
   openColModal.value = true;
   if (newColName.value) {
-    const newId = Math.max(...board.value.cols.map((col) => col.id || 0)) + 1;
+    // Filter out null/undefined ids, fallback to 0 if all are null
+    let maxId = 0;
+    if (Array.isArray(board.value.cols) && board.value.cols.length > 0) {
+      const validIds = board.value.cols.map(col => typeof col.id === 'number' && !isNaN(col.id) ? col.id : null).filter(id => id !== null);
+      maxId = validIds.length > 0 ? Math.max(...validIds) : 0;
+    }
+    const newId = maxId + 1;
     board.value.cols.push({ id: newId, name: newColName.value });
     await updateBoardApi();
     openColModal.value = false;
@@ -275,12 +281,27 @@ const addCard = async () => {
   });
 
   if (!targetCol) return;
-
+  console.log("active");
+  // Find max card id across all columns
+  let maxId = 0;
+  board.value.cols.forEach(col => {
+    if (Array.isArray(col.cards)) {
+      col.cards.forEach(card => {
+        if (typeof card.id === 'number' && card.id > maxId) {
+          maxId = card.id;
+        }
+      });
+    }
+  });
   const addNewCard = {
-    id: Math.max(...targetCol.cards.map((card) => card.id || 0), 0) + 1,
+    id: maxId + 1,
     ...newCard.value,
     members: [...newCard.value.members, user.value.email],
   };
+
+  if(!Array.isArray(targetCol.cards)){
+    targetCol.cards = []
+  }
 
   targetCol.cards.push(addNewCard);
 
@@ -392,7 +413,8 @@ const removeMember = (index) => {
           </button>
         </div>
         <div class="flex gap-2 w-full sm:w-auto">
-          <button @click="showInviteModal=true"
+          <button
+            @click="showInviteModal = true"
             class="btn btn-info btn-sm sm:btn-md text-white flex-1 sm:flex-none"
           >
             invite
@@ -548,7 +570,7 @@ const removeMember = (index) => {
   </div>
   <div
     v-if="openColModal"
-    class="fixed inset-0 z-50 flex items-center justify-center  backdrop-blur-sm p-4"
+    class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4"
   >
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
       <h2 class="text-xl font-semibold mb-4">เพิ่มคอลัมน์ใหม่</h2>
@@ -630,10 +652,14 @@ const removeMember = (index) => {
     :title="'Do you want to delete this board ?'"
   />
 
-  <div v-if="showInviteModal"class="fixed inset-0 z-50 flex items-center  justify-center backdrop-blur-sm p-4">
-    <div class="bg-white h-fit w-fit outline-1 outline-blue-600 p-6 rounded-2xl">
+  <div
+    v-if="showInviteModal"
+    class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4"
+  >
+    <div
+      class="bg-white h-fit w-fit outline-1 outline-blue-600 p-6 rounded-2xl"
+    >
       <form @submit.prevent="updateBoardApi" class="flex flex-col gap-6">
-
         <div class="flex flex-col gap-2">
           <label class="label">
             <span class="label-text font-semibold text-lg"> เพิ่มสมาชิก </span>
@@ -645,7 +671,7 @@ const removeMember = (index) => {
           >
             <div
               v-for="(member, index) in board.members"
-              v-show="member!==user.email"
+              v-show="member !== user.email"
               :key="index"
               class="badge badge-lg badge-primary gap-2"
             >
@@ -696,12 +722,14 @@ const removeMember = (index) => {
         <div class="divider"></div>
 
         <div class="flex gap-3 justify-end">
-          <button type="button" @click="showInviteModal=false" class="btn btn-ghost btn-lg">
+          <button
+            type="button"
+            @click="showInviteModal = false"
+            class="btn btn-ghost btn-lg"
+          >
             ยกเลิก
           </button>
-          <button  type="submit" class="btn btn-primary btn-lg">
-           บันทึก
-          </button>
+          <button type="submit" class="btn btn-primary btn-lg">บันทึก</button>
         </div>
       </form>
     </div>

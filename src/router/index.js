@@ -7,6 +7,7 @@ import RegisterView from "@/Views/RegisterView.vue";
 import BoardView from "@/Views/BoardView.vue";
 import CreateBoardView from "@/Views/CreateBoardView.vue";
 import BoardDetail from "@/Views/BoardDetail.vue";
+import NotificationView from "@/Views/NotificationView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,6 +41,11 @@ const router = createRouter({
       path: "/board/:id",
       component: BoardDetail,
       name: "boardDetail",
+    },
+    {
+      path: "/noti",
+      component: NotificationView,
+      name: "notiView",
     },
 
   ],
