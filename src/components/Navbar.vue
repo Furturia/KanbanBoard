@@ -12,7 +12,6 @@ onMounted(() => {
     return;
   }
   if (sessionStorage.getItem("userTempt")) {
-    console.log("hi");
 
     userStore.setUser(JSON.parse(sessionStorage.getItem("userTempt")));
   }
@@ -28,7 +27,7 @@ onMounted(async () => {
       }
     }
   } catch (error) {
-    console.log(error);
+    alert(error);
   }
 });
 </script>

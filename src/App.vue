@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar.vue";
 import { useUserStore } from "./store/userStore";
 import { onMounted } from "vue";
 import { computed } from "vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useBoardStore } from "./store/boardStore";
 
 const router=useRouter()
@@ -28,6 +28,11 @@ const logout = () => {
   dropdownOpen.value = false;
   router.push({name:'home'})
 };
+
+
+watch(user, () => {
+  dropdownOpen.value = false;
+});
 </script>
 
 <template>
@@ -37,7 +42,7 @@ const logout = () => {
         <RouterLink :to="{ name: 'board' }" class="hover:text-blue-500 hover:underline">board</RouterLink>
       </template>
       <div
-        v-if="user && user.username"
+        v-if=" user?.username"
         class="relative"
         @click="toggleDropdown"
       >

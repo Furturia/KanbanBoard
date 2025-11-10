@@ -4,22 +4,19 @@ const BOARD_API_URL = `${import.meta.env.VITE_APP_URL}/boards`;
 
 const getBoardByuserEmail = async (email) => {
   try {
-    console.log(email);
-
+    
     if (!email) throw new Error(`User email is required.`);
 
     const response = await fetch(`${BOARD_API_URL}`);
-    console.log(response);
-
     if (!response.ok) {
       throw new Error(
         `Failed to fetch board. Server responded with status ${response.status}`
       );
     }
     const data = await response.json();
-    console.log(data);
+    
     const res = data.filter((board) => {
-      console.log(board.members);
+     
       return board.members.includes(email);
     });
     const boardStore = useBoardStore();
@@ -62,38 +59,6 @@ const createBoard = async (board) => {
   }
 };
 
-
-// const addCols = async (id,cols) => {
-//   console.log(id+ cols);
-  
-//   try {
-//     if (!id || !cols) {
-//       throw new Error(
-//         `Missing required column properties.`
-//       );
-//     }
-
-//     const response = await fetch(`${BOARD_API_URL}/${id}/cols`, {
-//       method: "POST",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify(cols),
-//     });
-
-//     if (!response.ok) {
-//       throw new Error(
-//         `Failed to create column. Server responded with status ${response.status}`
-//       );
-//     }
-
-//     const data = await response.json();
-
-//     return data;
-//   } catch (error) {
-//     return {
-//       error: `Error creating column: ${error.message}`,
-//     };
-//   }
-// };
 
 const updateBoard = async (board) => {
   try {
@@ -161,47 +126,8 @@ const removeBoardById = async (id) => {
   }
 };
 
-const getUserByEmail = async (email) => {
-  try {
-    if (!email) {
-      throw new Error("Missing required email are provemailed.");
-    }
-    const response = await fetch(`${BOARD_API_URL}?email=${email}`);
-    const user = await response.json();
 
-    if (!user[0]) throw new Error("User Not Found!");
 
-    return user[0];
-  } catch (error) {
-    return {
-      error: error.message,
-    };
-  }
-};
 
-const login = async (email, password) => {
-  try {
-    if (!email || !password) {
-      throw new Error("Please enter your email and password!");
-    }
-    const user = await getUserByEmail(email);
-
-    if (user.error) {
-      throw new Error(user.error);
-    }
-    if (!user || !user.password) {
-      throw new Error("User Not Found!");
-    }
-
-    if (password !== user.password) {
-      throw new Error("Some thing Wrong! Check your password or email...");
-    }
-    return user;
-  } catch (error) {
-    return {
-      error: error.message,
-    };
-  }
-};
 
 export { getBoardByuserEmail,updateBoard,removeBoardById, getBoardById, createBoard };

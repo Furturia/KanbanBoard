@@ -1,200 +1,104 @@
 {
   "users": [
     {
-      "id": "1",
-      "username": "figgy",
-      "email": "ananya.husen@mail.kmutt.ac.th",
-      "password": "abc124",
+      "id": "0207",
+      "username": "test1",
+      "email": "test@gmail.com",
+      "password": "test1234"
+    },
+    {
+      "id": "a1f1",
+      "username": "test2",
+      "email": "test2@gmail.com",
+      "password": "test1234",
       "noti": [
         {
           "title": "คุณถูกเพิ่มในบอร์ดใหม่",
-          "boardId": "1",
-          "message": "คุณถูกเชิญให้เข้าร่วม Project Managements โดย itbkk.somsuan@ad.sit.kmutt.ac.th",
-          "createdAt": "2025-11-10T11:30:00Z",
-          "isRead": false
+          "boardId": "b815",
+          "message": "คุณถูกเชิญให้เข้าร่วม test1 โดย test@test.gmail.com"
+        },
+        {
+          "title": "คุณถูกเพิ่มในการ์ดใหม่",
+          "boardId": "b815",
+          "message": "คุณถูกเชิญให้เข้าร่วม test1 โดย test@test.gmail.com"
+        },
+        {
+          "title": "คุณถูกเพิ่มในการ์ดใหม่",
+          "boardId": "b815",
+          "message": "คุณถูกเชิญให้เข้าร่วม test2 โดย test@test.gmail.com"
         }
       ]
-    },
-    {
-      "id": "2",
-      "username": "mild",
-      "email": "mild@mail.com",
-      "password": "pass123"
-    },
-    {
-      "id": "3",
-      "username": "tiger",
-      "email": "tiger@mail.com",
-      "password": "tigerpass"
-    },
-    {
-      "id": "dcce",
-      "username": "som",
-      "email": "itbkk.somsuan@ad.sit.kmutt.ac.th",
-      "password": "itProj24*SOM"
     }
   ],
   "boards": [
     {
-      "id": "1",
-      "name": "Project Managements",
+      "id": "b815",
+      "name": "testBoard",
       "members": [
-        "mild@mail.com",
-        "tiger@mail.com",
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": [
-        {
-          "id": 1,
-          "name": "UI"
-        },
-        {
-          "id": 2,
-          "name": "Frontend"
-        },
-        {
-          "id": 3,
-          "name": "Backend"
-        },
-        {
-          "id": 4,
-          "name": "Urgent"
-        },
-        {
-          "id": null,
-          "name": "cs"
-        },
-        {
-          "id": null,
-          "name": "test"
-        }
+        "test2@gmail.com",
+        "test@test.gmail.com",
+        "test3@gmail.com"
       ],
       "cols": [
         {
-          "id": 2,
-          "name": "test",
-          "cards": []
-        },
-        {
-          "id": 3,
-          "name": "test2",
+          "id": 1,
+          "name": "test1",
           "cards": [
-            {
-              "id": 3,
-              "title": "test3",
-              "description": "",
-              "badges": [],
-              "members": [
-                "itbkk.somsuan@ad.sit.kmutt.ac.th"
-              ]
-            },
-            {
-              "id": 1,
-              "title": "test1",
-              "description": "",
-              "badges": [],
-              "members": [
-                "itbkk.somsuan@ad.sit.kmutt.ac.th"
-              ]
-            },
-            {
-              "id": 4,
-              "title": "test4",
-              "description": "",
-              "badges": [],
-              "members": [
-                "itbkk.somsuan@ad.sit.kmutt.ac.th"
-              ]
-            },
             {
               "id": 2,
               "title": "test2",
-              "description": "",
-              "badges": [],
+              "description": "test",
+              "badges": [
+                "test",
+                "test2"
+              ],
               "members": [
-                "itbkk.somsuan@ad.sit.kmutt.ac.th"
+                "test2@gmail.com",
+                "test3@gmail.com",
+                "test@test.gmail.com"
               ]
             }
           ]
         },
         {
-          "id": 4,
-          "name": "test3",
-          "cards": []
+          "id": 2,
+          "name": "test2",
+          "cards": [
+            {
+              "id": 1,
+              "title": "test1",
+              "description": "test",
+              "badges": [
+                "test1",
+                "test"
+              ],
+              "members": [
+                "test2@gmail.com",
+                "test@test.gmail.com",
+                "test3@gmail.com"
+              ]
+            }
+          ]
+        }
+      ],
+      "badges": [
+        {
+          "id": 1,
+          "name": "test1"
+        },
+        {
+          "id": 2,
+          "name": "test"
+        },
+        {
+          "id": null,
+          "name": "test2"
+        },
+        {
+          "id": null,
+          "name": "test3"
         }
       ]
-    },
-    {
-      "id": "39b5",
-      "name": "jkjk",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "b04e",
-      "name": "jhjh",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "6656",
-      "name": "bpk",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "6c77",
-      "name": "xmxksmk",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "d031",
-      "name": "mkm",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "f4c8",
-      "name": "ssmkc",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "14c9",
-      "name": "mkmk",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "1b98",
-      "name": "mkmk",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
-    },
-    {
-      "id": "09b0",
-      "name": "่้hg",
-      "members": [
-        "itbkk.somsuan@ad.sit.kmutt.ac.th"
-      ],
-      "badges": []
     }
   ]
 }

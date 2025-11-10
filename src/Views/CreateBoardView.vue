@@ -4,26 +4,24 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/userStore";
 import { useBoardStore } from "@/store/boardStore";
 import { createBoard, getBoardByuserEmail } from "@/services/boardService";
+import { getUserByEmail, updateUser } from "@/services/userService";
 
 const router = useRouter();
 const userStore = useUserStore();
 const boardStore = useBoardStore();
 onMounted(async () => {
   try {
-    console.log(user.value);
+    
 
     if (!boardStore.getBoard()) {
-        const response = await getBoardByuserEmail(user.value?.email);
-        
-        if (response?.error) {
-            throw new Error(response.error);
-        }
-        
-    }
+      const response = await getBoardByuserEmail(user.value?.email);
 
-    
+      if (response?.error) {
+        throw new Error(response.error);
+      }
+    }
   } catch (error) {
-    console.log(error);
+    alert(error);
   }
 });
 const user = computed(() => userStore.getUser());
@@ -36,7 +34,6 @@ const formData = ref({
 const memberEmail = ref("");
 const showMemberInput = ref(false);
 
-
 const addMember = () => {
   if (memberEmail.value && memberEmail.value.includes("@")) {
     if (!formData.value.members.includes(memberEmail.value)) {
@@ -44,11 +41,45 @@ const addMember = () => {
       memberEmail.value = "";
       showMemberInput.value = false;
     }
+  } else{
+    alert("รูปแบบอีเมลไม่ถูกต้อง หรือมีอีเมลอยู่แล้ว")
+
   }
 };
 
 const removeMember = (index) => {
   formData.value.members.splice(index, 1);
+};
+
+const addNoti = async (board, email) => {
+  try {
+    const response = await getUserByEmail(email);
+
+    if (response?.error) {
+      return;
+    }
+    response.noti
+      ? response.noti.push({
+          title: "คุณถูกเพิ่มในบอร์ดใหม่",
+          boardId: board.id,
+          message: `คุณถูกเชิญให้เข้าร่วม ${board.name} โดย ${user.value?.email}`,
+        })
+      : response.noti = [
+          {
+            title: "คุณถูกเพิ่มในบอร์ดใหม่",
+            boardId: board.id,
+            message: `คุณถูกเชิญให้เข้าร่วม ${board.name} โดย ${user.value?.email}`,
+          },
+        ];
+
+    const updateRes = await updateUser(response.id, { ...response });
+
+    if (updateRes?.error) {
+      throw new Error(updateRes?.error);
+    }
+  } catch (error) {
+    alert(error)
+  }
 };
 
 const handleCreateBoard = async () => {
@@ -59,7 +90,7 @@ const handleCreateBoard = async () => {
 
     const boardData = {
       name: formData.value.name,
-      members: [...formData.value.members,user.value.email],
+      members: [...formData.value.members, user.value.email],
     };
 
     const response = await createBoard(boardData);
@@ -68,13 +99,17 @@ const handleCreateBoard = async () => {
       throw new Error(response.error);
     }
 
-    console.log(response);
-    
+    if (response.members) {
+      response.members.forEach(async (member) => {
+        if (member !== user.value.email) {
+          await addNoti(response, member);
+        }
+      });
+    }
     boardStore.addBoard(response);
-
     router.push({ name: "board" });
   } catch (error) {
-    console.log(error);
+    
     alert(error.message);
   }
 };
@@ -103,7 +138,6 @@ const goBack = () => {
         </button>
         <div>
           <h1 class="text-3xl font-bold text-gray-800">สร้างบอร์ดใหม่</h1>
-          
         </div>
       </div>
 

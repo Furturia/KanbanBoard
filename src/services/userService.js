@@ -21,14 +21,14 @@ const getUserById = async (id) => {
   }
 };
 
-// Update user {}
+
 const updateUser = async (id, user) => {
   try {
    
     if (!id) throw new Error(`User ID is required for updating.`);
-    if (!user.username || !user.email || !user.pic) {
+    if (!user) {
       throw new Error(
-        `Missing required user properties. Ensure 'username', 'email', and 'pic' are provided.`
+        `Missing required user properties. Ensure 'user' are provided.`
       );
     }
 
@@ -53,7 +53,6 @@ const updateUser = async (id, user) => {
   }
 };
 
-// Create user {}
 const register = async (username,email,password) => {
   try {
     if (!username || !email || !password) {
@@ -62,7 +61,7 @@ const register = async (username,email,password) => {
       );
     }
 
-    //console.log(user);
+   
     
     const response = await fetch(USER_API_URL, {
       method: "POST",
@@ -86,23 +85,6 @@ const register = async (username,email,password) => {
 };
 
 
-const getUserByUsername = async (username) => {
-  try {
-    if (!username) {
-      throw new Error("Missing required username are provided.");
-    }
-    const response = await fetch(`${USER_API_URL}?username=${username}`);
-    const user = await response.json();
-
-    if (!user[0]) throw new Error("User Not Found!");
-
-    return user[0];
-  } catch (error) {
-    return {
-      error: error.message,
-    };
-  }
-};
 
 const getUserByEmail = async (email) => {
   try {

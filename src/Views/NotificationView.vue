@@ -1,13 +1,16 @@
 <script setup>
 import { useUserStore } from "@/store/userStore";
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 
 const userStore = useUserStore();
+
 const user = computed(() => userStore.getUser());
+
+
 </script>
 
 <template>
-  <div class="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-8">
+  <div  class="min-h-screen bg-linear-to-br from-slate-50 to-slate-100 p-8">
     <div class="max-w-3xl mx-auto">
       <div class="mb-6">
         <h1 class="text-3xl font-bold text-slate-800 mb-2">การแจ้งเตือน</h1>
@@ -15,9 +18,10 @@ const user = computed(() => userStore.getUser());
 
       <div class="space-y-4">
         <RouterLink
-          v-if="user.noti"
+          v-if="user?.noti"
           v-for="noti in user.noti"
           :to="{ name: 'board' }"
+          class="flex flex-col gap-4"
         >
           <div
             class="relative rounded-xl shadow-sm border-2 border-blue-200 bg-blue-50 transition-all duration-300 hover:shadow-md"

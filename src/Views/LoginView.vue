@@ -21,30 +21,29 @@ const handleLogin = async () => {
       formData.value.email,
       formData.value.password
     );
-    console.log(response);
     
 
     if (response?.error) {
       throw new Error(response.error);
     }
 
-    const { id, username, email} = response;
+    const { id, username, email,noti} = response;
 
-    userStore.setUser({ id, username, email });
-    console.log(userStore.getUser());
+    userStore.setUser(noti ? { id, username, email ,noti}: { id, username, email });
+    
     
 
     if (formData.value.rememberMe) {
       localStorage.setItem(
         "user",
-        JSON.stringify({ id, username, email })
+        JSON.stringify(noti ? { id, username, email ,noti}: { id, username, email })
       );
     }
 
     router.push({ name: "home" });
   } catch (error) {
-    
-   console.log(error);
+    alert(error)
+
    
   }
 };

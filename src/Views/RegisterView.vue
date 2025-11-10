@@ -26,20 +26,14 @@ const handleRegister = async () => {
       formData.value.email,
       formData.value.password
     );
-    console.log(response);
 
     if (response?.error) {
       throw new Error(response.error);
     }
 
-    // const { id, username, email } = response;
-
-    // userStore.setUser({ id, username, email });
-    // console.log(userStore.getUser());
-
     router.push({ name: 'home' });
   } catch (error) {
-    console.log(error);
+    alert(error);
   }
 };
 </script>

@@ -21,8 +21,6 @@ const selectMember = (member) => {
 };
 
 const availableMembers = () => {
-  console.log(props.board);
-
   if (!props.board?.members) return [];
   return props.board.members.filter(
     (m) => !props.newCard.members.includes(m) && m !== props.user.email
@@ -35,11 +33,7 @@ const removeMember = (index) => {
 
 const badgeInput = ref("");
 const selectBadge = (badge) => {
-  console.log("select");
-
   if (!props.newCard.badges.includes(badge.name)) {
-    console.log("hi");
-
     props.newCard.badges.push(badge.name);
   }
   showBadgeDropdown.value = false;
@@ -47,12 +41,17 @@ const selectBadge = (badge) => {
 
 const addBadge = () => {
   if (badgeInput.value.trim()) {
+    if (!props.board?.badges) {
+      props.board.badges = [];
+    }
+
     const exists =
       props.board.badges.filter(
         (badge) =>
           badge.name.trim().toLowerCase() ===
           badgeInput.value.trim().toLowerCase()
       ).length !== 0;
+
     if (!props.newCard.badges.includes(badgeInput.value.trim()) && !exists) {
       props.newCard.badges.push(badgeInput.value.trim());
       props.board.badges.push({
@@ -88,7 +87,7 @@ const lostFocus = () => {
 
 const handlerAdd = () => {
   badgeInput.value = "";
-  props.addCard()
+  props.addCard();
 };
 </script>
 
@@ -218,7 +217,7 @@ const handlerAdd = () => {
               <div
                 v-for="badge in availableBadges()"
                 :key="badge"
-                @click="selectBadge(badge)"
+                @mousedown.prevent="selectBadge(badge)"
                 class="px-4 py-2 hover:bg-green-50 cursor-pointer"
               >
                 {{ badge.name }}
